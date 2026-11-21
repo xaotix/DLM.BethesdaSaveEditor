@@ -1,0 +1,40 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.JanelaOpcoes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Title="{Binding [OptTitle], Source={x:Static core:LocalizationService.Instance}}"
+        Height="230"
+        Width="440"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="{Binding [OptLanguage], Source={x:Static core:LocalizationService.Instance}}"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,6" />
+            <ComboBox x:Name="CmbIdioma" Margin="0,0,0,14" SelectionChanged="CmbIdioma_SelectionChanged">
+                <ComboBoxItem Content="English" Tag="en" />
+                <ComboBoxItem Content="Portugues (Brasil)" Tag="pt" />
+                <ComboBoxItem Content="Espanol" Tag="es" />
+            </ComboBox>
+
+            <CheckBox x:Name="ChkAutoBackup"
+                      Content="{Binding [OptAutoBackup], Source={x:Static core:LocalizationService.Instance}}"
+                      IsChecked="{Binding AutoBackup, Source={x:Static core:LocalizationService.Instance}, Mode=TwoWay}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{Binding [BtnClose], Source={x:Static core:LocalizationService.Instance}}"
+                    Width="95"
+                    IsDefault="True"
+                    IsCancel="True"
+                    Click="BtnFechar_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
+

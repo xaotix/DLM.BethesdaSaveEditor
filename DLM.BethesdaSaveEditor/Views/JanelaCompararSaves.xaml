@@ -1,0 +1,69 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.JanelaCompararSaves"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Title="{Binding [CompareTitle], Source={x:Static core:LocalizationService.Instance}}"
+        Height="560"
+        Width="860"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Save A:" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <TextBox x:Name="TxtSaveA" Grid.Column="1" Margin="0,0,6,0" />
+            <Button Grid.Column="2" Content="{Binding [BtnBrowse], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnSelA_Click" />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Save B:" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <TextBox x:Name="TxtSaveB" Grid.Column="1" Margin="0,0,6,0" />
+            <Button Grid.Column="2" Content="{Binding [BtnBrowse], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Margin="0,0,6,0" Click="BtnSelB_Click" />
+            <Button x:Name="BtnComparar" Grid.Column="3" Content="{Binding [BtnCompare], Source={x:Static core:LocalizationService.Instance}}" Width="100" Click="BtnComparar_Click" />
+        </Grid>
+
+        <TabControl Grid.Row="2">
+            <TabItem Header="Metrics">
+                <DataGrid x:Name="DgDiff" Margin="6">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Categoria}" Width="120" />
+                        <DataGridTextColumn Header="Metric" Binding="{Binding Metrica}" Width="*" />
+                        <DataGridTextColumn Header="Save A" Binding="{Binding ValorSaveA}" Width="140" />
+                        <DataGridTextColumn Header="Save B" Binding="{Binding ValorSaveB}" Width="140" />
+                        <DataGridTextColumn Header="Diff" Binding="{Binding Diferenca}" Width="130" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Plugin Diff">
+                <TextBox x:Name="TxtPluginsDiff"
+                         Margin="6"
+                         IsReadOnly="True"
+                         FontFamily="Consolas"
+                         VerticalScrollBarVisibility="Auto"
+                         VerticalContentAlignment="Top"
+                         TextWrapping="Wrap" />
+            </TabItem>
+        </TabControl>
+
+        <DockPanel Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock x:Name="TxtStatus" DockPanel.Dock="Left" VerticalAlignment="Center" Foreground="{StaticResource FrontTextoSuave}" />
+            <Button Content="{Binding [BtnClose], Source={x:Static core:LocalizationService.Instance}}" HorizontalAlignment="Right" Width="90" IsCancel="True" />
+        </DockPanel>
+    </Grid>
+</Window>

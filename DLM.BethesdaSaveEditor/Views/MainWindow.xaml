@@ -1,0 +1,687 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Title="{Binding TituloJanela}"
+        Height="790"
+        Width="1300"
+        MinHeight="640"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragOver="Window_DragOver">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- TOP MENU (NO HEADER BUTTONS, NO REDUNDANCY) -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="{Binding [MenuFile], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuOpen], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+O" Click="MenuAbrir_Click" />
+                <MenuItem Header="{Binding [MenuSaveBrowser], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+B" Click="MenuNavegadorSaves_Click" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuSave], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+S" Click="MenuSalvar_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuSaveAs], Source={x:Static core:LocalizationService.Instance}}" Click="MenuSalvarComo_Click" IsEnabled="{Binding SaveCarregado}" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuExportPlugins], Source={x:Static core:LocalizationService.Instance}}" Click="MenuExportarPlugins_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuExportShot], Source={x:Static core:LocalizationService.Instance}}" Click="MenuExportarScreenshot_Click" IsEnabled="{Binding SaveCarregado}" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuExit], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Alt+F4" Click="MenuSair_Click" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding [MenuEdit], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuUndo], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" IsEnabled="{Binding Historico.CanUndo}" />
+                <MenuItem Header="{Binding [MenuRedo], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+Y" Click="MenuRedo_Click" IsEnabled="{Binding Historico.CanRedo}" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding [MenuClean], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuFullClean], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimpezaCompleta_Click" IsEnabled="{Binding SaveCarregado}" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuCleanUnattached], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimparUnattached_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuCleanUndefined], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimparUndefined_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuCleanNonExistent], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimparNonExistent_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuPurifyFormLists], Source={x:Static core:LocalizationService.Instance}}" Click="MenuPurificarFormLists_Click" IsEnabled="{Binding SaveCarregado}" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuBatchClean], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimpezaLote_Click" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding [MenuTools], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuEditHeader], Source={x:Static core:LocalizationService.Instance}}" Click="MenuEditarCabecalho_Click" IsEnabled="{Binding SaveCarregado}" />
+                <MenuItem Header="{Binding [MenuCompareSaves], Source={x:Static core:LocalizationService.Instance}}" Click="MenuCompararSaves_Click" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding [MenuOptions], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuSettings], Source={x:Static core:LocalizationService.Instance}}" Click="MenuOpcoes_Click" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding [MenuHelp], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuAbout], Source={x:Static core:LocalizationService.Instance}}" Click="MenuSobre_Click" />
+            </MenuItem>
+        </Menu>
+
+        <!-- MAIN BODY -->
+        <Grid Grid.Row="1" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="295" MinWidth="250" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT SIDEBAR -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Style="{StaticResource CartaoResumo}" Padding="6">
+                        <Grid Height="165" Background="#111827">
+                            <Image Source="{Binding CapturaTela}" Stretch="Uniform" />
+                            <TextBlock Text="{Binding [NoScreenshot], Source={x:Static core:LocalizationService.Instance}}"
+                                       Foreground="#9CA3AF" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CapturaTela}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource CartaoResumo}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding NomePersonagem}" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource CorPrincipal}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding JogoNome}" FontSize="11.5" Foreground="{StaticResource FrontTextoSuave}" Margin="0,2,0,8" />
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="95" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [LblLevel], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding NivelTexto}" Margin="0,2" TextWrapping="Wrap" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [LblRaceGender], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RacaGenero}" Margin="0,2" TextWrapping="Wrap" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [LblLocation], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Localizacao}" Margin="0,2" TextWrapping="Wrap" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [LblGameDate], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DataJogo}" Margin="0,2" TextWrapping="Wrap" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [LblDiskSize], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding TamanhoDiscoTexto}" Margin="0,2" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding [LblUncompSize], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding TamanhoDescompactadoTexto}" Margin="0,2" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding [LblCompression], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CompressaoTexto}" Margin="0,2" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="{Binding [LblIntegrity], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Margin="0,2" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding StatusArquivoTexto}" Margin="0,2" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CartaoResumo}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding [LblSaveHealth], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4" />
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding PontuacaoSaude}" Margin="0,2,0,4" />
+                            <TextBlock Text="{Binding NivelSaude}" FontWeight="SemiBold" Foreground="{StaticResource CorPrincipal}" Margin="0,0,0,6" />
+                            <ItemsControl ItemsSource="{Binding AlertasSaude}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="11.5" Margin="0,2" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" />
+
+            <!-- RIGHT TABS -->
+            <TabControl Grid.Column="2">
+                <!-- TAB 1: CHARACTER & GLOBAL PROPERTIES (LEVEL, HEALTH, MAGICKA, STAMINA, SKILLS, PERKS, GLOBALS) -->
+                <TabItem Header="{Binding [TabCharacterGlobals], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.05*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="1.25*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LEFT: DIRECT BINARY CHARACTER ATTRIBUTES + 18 SKILLS -->
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <GroupBox Grid.Row="0" Header="{Binding [GrpBaseAttributes], Source={x:Static core:LocalizationService.Instance}}" Margin="0,0,0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="105" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="105" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Level:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditLevel, UpdateSourceTrigger=PropertyChanged}" Margin="2,3,8,3" />
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Base Health:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding EditBaseHealth, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Base Magicka:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditBaseMagicka, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3,8,3" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Base Stamina:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding EditBaseStamina, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Magicka Bonus:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditMagickaOffset, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3,8,3" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Stamina Bonus:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding EditStaminaOffset, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+
+                                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                            Content="{Binding [BtnApplyCharacter], Source={x:Static core:LocalizationService.Instance}}"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,6,0,0"
+                                            IsEnabled="{Binding SaveCarregado}"
+                                            Click="BtnAplicarPersonagem_Click" />
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Grid.Row="1" Header="{Binding [GrpSkills], Source={x:Static core:LocalizationService.Instance}}" Margin="0,0,0,6">
+                                <DataGrid ItemsSource="{Binding PlayerSkills}" IsReadOnly="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Skill" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Base" Binding="{Binding BaseValue, UpdateSourceTrigger=PropertyChanged}" Width="65" />
+                                        <DataGridTextColumn Header="Bonus" Binding="{Binding OffsetValue, UpdateSourceTrigger=PropertyChanged}" Width="65" />
+                                        <DataGridTextColumn Header="Total" Binding="{Binding TotalValue}" Width="65" IsReadOnly="True" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+
+                            <GroupBox Grid.Row="2" Header="{Binding [GrpConsoleExtras], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="95" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="95" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Carry Weight:" VerticalAlignment="Center" Margin="0,2" />
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ExtraCarryWeight, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,8,2" />
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Dragon Souls:" VerticalAlignment="Center" Margin="0,2" />
+                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ExtraDragonSouls, UpdateSourceTrigger=PropertyChanged}" Margin="2,2" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Gold / Caps:" VerticalAlignment="Center" Margin="0,2" />
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ExtraGold, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,8,2" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Perk Points:" VerticalAlignment="Center" Margin="0,2" />
+                                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ExtraPerks, UpdateSourceTrigger=PropertyChanged}" Margin="2,2" />
+
+                                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                                            Content="{Binding [BtnExportBat], Source={x:Static core:LocalizationService.Instance}}"
+                                            Style="{DynamicResource BotaoPrimario}"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,6,0,0"
+                                            Click="BtnExportarBat_Click" />
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+
+                        <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Stretch" Background="Transparent" />
+
+                        <!-- RIGHT: CURATED EDITABLE GLOBAL PROPERTIES -->
+                        <GroupBox Grid.Column="2" Header="{Binding [GrpGlobalPresets], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <DataGrid Grid.Row="0"
+                                          ItemsSource="{Binding GlobalPresets}"
+                                          SelectedItem="{Binding GlobalPresetSelecionado}"
+                                          IsReadOnly="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Property" Binding="{Binding Name}" Width="145" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Value" Binding="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" Width="75" />
+                                        <DataGridTextColumn Header="Range" Binding="{Binding RecommendedRange}" Width="75" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" IsReadOnly="True" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                                    <Button Content="{Binding [BtnApplyGlobalPreset], Source={x:Static core:LocalizationService.Instance}}"
+                                            IsEnabled="{Binding SaveCarregado}"
+                                            Click="BtnAplicarGlobalPreset_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 2: QUEST BUG FIXER (SKYRIM SE & FALLOUT 4) -->
+                <TabItem Header="{Binding [TabQuestFixer], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                            <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding FiltroQuests, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding QuestFixesFiltradas}" SelectedItem="{Binding QuestSelecionada}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Game" Binding="{Binding GameLabel}" Width="80" />
+                                <DataGridTextColumn Header="ID" Binding="{Binding EditorID}" Width="75" />
+                                <DataGridTextColumn Header="Quest" Binding="{Binding QuestName}" Width="170" />
+                                <DataGridTextColumn Header="Save Status" Binding="{Binding StatusNoSave}" Width="165" />
+                                <DataGridTextColumn Header="Known Bug" Binding="{Binding BugDescription}" Width="*" />
+                                <DataGridTextColumn Header="Stage" Binding="{Binding TargetStage}" Width="55" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <Button Content="{Binding [BtnCopyConsole], Source={x:Static core:LocalizationService.Instance}}"
+                                    Style="{DynamicResource BotaoPrimario}"
+                                    Click="BtnCopiarComandoQuest_Click" />
+                            <Button Content="{Binding [BtnFixQuest], Source={x:Static core:LocalizationService.Instance}}"
+                                    IsEnabled="{Binding SaveCarregado}"
+                                    Click="BtnCorrigirQuest_Click" />
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 3: PLUGINS & IMPACT -->
+                <TabItem Header="{Binding [TabPlugins], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <UniformGrid Grid.Row="0" Columns="3" Margin="0,0,0,6">
+                            <Border Style="{StaticResource CartaoResumo}">
+                                <StackPanel>
+                                    <TextBlock Text="Plugins" FontWeight="SemiBold" Foreground="{StaticResource FrontTextoSuave}" />
+                                    <TextBlock Text="{Binding ResumoPlugins}" FontWeight="SemiBold" Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CartaoResumo}">
+                                <StackPanel>
+                                    <TextBlock Text="ChangeForms" FontWeight="SemiBold" Foreground="{StaticResource FrontTextoSuave}" />
+                                    <TextBlock Text="{Binding ResumoChangeForms}" FontWeight="SemiBold" Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CartaoResumo}">
+                                <StackPanel>
+                                    <TextBlock Text="Papyrus" FontWeight="SemiBold" Foreground="{StaticResource FrontTextoSuave}" />
+                                    <TextBlock Text="{Binding ResumoPapyrus}" FontWeight="SemiBold" Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <DockPanel Grid.Row="1" Margin="4,0,4,6">
+                            <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding FiltroPlugins, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding PluginsImpacto}" Margin="4,0,4,4">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Indice}" Width="75" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColIndex], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Nome}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColPlugin], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Tipo}" Width="90" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColType], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding ChangeForms}" Width="105" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColChangeForms], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding InstanciasScript}" Width="85" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColScripts], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding TamanhoFormatado}" Width="100" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColSize], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding PercentualFormatado}" Width="80" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColPercentSave], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 4: MISC STATS -->
+                <TabItem Header="{Binding [TabMiscStats], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                            <TextBox Grid.Column="1" Text="{Binding FiltroMiscStats, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" />
+                            <Button Grid.Column="2" Content="{Binding [BtnClearBounties], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnZerarBounties_Click" IsEnabled="{Binding SaveCarregado}" />
+                        </Grid>
+
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding MiscStatsFiltrados}" IsReadOnly="False" BeginningEdit="DgMiscStats_BeginningEdit" CellEditEnding="DgMiscStats_CellEditEnding">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding CategoryName}" Width="120" IsReadOnly="True" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColCategory], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding NameText}" Width="*" IsReadOnly="True" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColStatName], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="140" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColValue], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 5: PAPYRUS EDITOR -->
+                <TabItem Header="{Binding [TabPapyrus], Source={x:Static core:LocalizationService.Instance}}">
+                    <TabControl Margin="6">
+                        <TabItem Header="{Binding [SubTabInstances], Source={x:Static core:LocalizationService.Instance}}">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="3*" />
+                                    <RowDefinition Height="6" />
+                                    <RowDefinition Height="2*" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                                    <TextBox Grid.Column="1" Text="{Binding FiltroInstancias, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" />
+                                    <CheckBox Grid.Column="2" Content="{Binding [ChkOnlyUnattached], Source={x:Static core:LocalizationService.Instance}}" IsChecked="{Binding SomenteInstanciasSoltas}" VerticalAlignment="Center" Margin="4,0" />
+                                    <CheckBox Grid.Column="3" Content="{Binding [ChkOnlyUndefined], Source={x:Static core:LocalizationService.Instance}}" IsChecked="{Binding SomenteInstanciasIndefinidas}" VerticalAlignment="Center" Margin="4,0,8,0" />
+                                    <Button Grid.Column="4" Content="{Binding [BtnDeleteSelected], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPerigo}" Click="BtnExcluirInstancia_Click" />
+                                </Grid>
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding InstanciasFiltradas}" SelectedItem="{Binding InstanciaSelecionada}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="EID" Binding="{Binding IdHex}" Width="135" />
+                                        <DataGridTextColumn Binding="{Binding ScriptNome}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColScript], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        <DataGridTextColumn Header="RefID" Binding="{Binding RefIDHex}" Width="170" />
+                                        <DataGridTextColumn Binding="{Binding EstadoTexto}" Width="110" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColState], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding QuantidadeVariaveis}" Width="55" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColVars], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding StatusTexto}" Width="105" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColStatus], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <GridSplitter Grid.Row="2" Height="6" HorizontalAlignment="Stretch" Background="Transparent" />
+                                <GroupBox Grid.Row="3" Header="{Binding [GrpInstanceVars], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <DataGrid Grid.Row="0" ItemsSource="{Binding VariaveisInstancia}" SelectedItem="{Binding VariavelInstanciaSelecionada}" MouseDoubleClick="DgVarInstancia_DoubleClick">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="#" Binding="{Binding Indice}" Width="45" />
+                                                <DataGridTextColumn Binding="{Binding NomeMembro}" Width="220" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColMember], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                                <DataGridTextColumn Binding="{Binding Tipo}" Width="110" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColType], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                                <DataGridTextColumn Binding="{Binding Valor}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColValue], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                                            <Button Content="{Binding [BtnEditVariable], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnEditarVarInstancia_Click" />
+                                        </StackPanel>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="{Binding [SubTabArrays], Source={x:Static core:LocalizationService.Instance}}">
+                            <Grid Margin="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="1.4*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                                        <TextBox Text="{Binding FiltroArrays, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DockPanel>
+                                    <DataGrid Grid.Row="1" ItemsSource="{Binding ArraysFiltrados}" SelectedItem="{Binding ArraySelecionado}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="EID" Binding="{Binding IdHex}" Width="130" />
+                                            <DataGridTextColumn Binding="{Binding TipoTexto}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColType], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            <DataGridTextColumn Binding="{Binding Length}" Width="70" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColLength], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                                <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" />
+                                <GroupBox Grid.Column="2" Header="{Binding [GrpArrayElements], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <DataGrid Grid.Row="0" ItemsSource="{Binding ElementosArray}" SelectedItem="{Binding ElementoArraySelecionado}" MouseDoubleClick="DgArrayElem_DoubleClick">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="#" Binding="{Binding Indice}" Width="50" />
+                                                <DataGridTextColumn Binding="{Binding Tipo}" Width="110" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColType], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                                <DataGridTextColumn Binding="{Binding Valor}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColValue], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,0,0">
+                                            <Button Content="{Binding [BtnEditVariable], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnEditarElemArray_Click" />
+                                            <Button Content="{Binding [BtnAddEntry], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnAddArrayElem_Click" />
+                                            <Button Content="{Binding [BtnShiftUp], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnShiftUpArray_Click" />
+                                            <Button Content="{Binding [BtnShiftDown], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnShiftDownArray_Click" />
+                                            <Button Content="{Binding [BtnRemoveEntry], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPerigo}" Click="BtnRemArrayElem_Click" />
+                                        </WrapPanel>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="{Binding [SubTabScriptsThreads], Source={x:Static core:LocalizationService.Instance}}">
+                            <Grid Margin="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                                        <TextBox Text="{Binding FiltroScripts, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DockPanel>
+                                    <DataGrid Grid.Row="1" ItemsSource="{Binding ScriptsFiltrados}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding NomeTexto}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColScript], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            <DataGridTextColumn Binding="{Binding PaiTexto}" Width="130" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColParent], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            <DataGridTextColumn Binding="{Binding InstanceCount}" Width="75" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColInstances], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            <DataGridTextColumn Binding="{Binding QuantidadeMembros}" Width="70" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColMembers], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                                <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" />
+                                <GroupBox Grid.Column="2" Header="{Binding [GrpActiveThreads], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <DataGrid Grid.Row="0" ItemsSource="{Binding ThreadsAtivas}" SelectedItem="{Binding ThreadSelecionada}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="ID" Binding="{Binding IdHex}" Width="85" />
+                                                <DataGridTextColumn Binding="{Binding ScriptTopo}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColTopScript], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                                <DataGridTextColumn Binding="{Binding EventoTopo}" Width="130" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColEvent], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                                <DataGridTextColumn Binding="{Binding ProfundidadePilha}" Width="60" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColFrames], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                                            <Button Content="{Binding [BtnTerminateThread], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnEncerrarThread_Click" />
+                                            <Button Content="{Binding [BtnDeleteThread], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPerigo}" Click="BtnExcluirThread_Click" />
+                                        </StackPanel>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="{Binding [SubTabStrings], Source={x:Static core:LocalizationService.Instance}}">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                                    <TextBox Grid.Column="1" Text="{Binding FiltroStrings, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" />
+                                    <Button Grid.Column="2" Content="{Binding [BtnEditString], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnEditarString_Click" />
+                                    <Button Grid.Column="3" Content="{Binding [BtnAddString], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnAddString_Click" />
+                                </Grid>
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding StringsFiltradas}" SelectedItem="{Binding StringSelecionada}" MouseDoubleClick="DgStrings_DoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding Index}" Width="80" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColIndex], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding Text}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColText], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </TabItem>
+
+                <!-- TAB 6: CHANGEFORMS & HEX -->
+                <TabItem Header="{Binding [TabChangeForms], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="6" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                            <TextBox Grid.Column="1" Text="{Binding FiltroChangeForms, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" />
+                            <Button Grid.Column="2" Content="{Binding [BtnEditFlags], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnEditarFlags_Click" />
+                            <Button Grid.Column="3" Content="{Binding [BtnDeleteSelected], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPerigo}" Click="BtnExcluirChangeForm_Click" />
+                        </Grid>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding ChangeFormsFiltrados}" SelectedItem="{Binding ChangeFormSelecionado}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="FormID" Binding="{Binding FormIDHex}" Width="210" />
+                                <DataGridTextColumn Binding="{Binding TipoCodigo}" Width="65" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColType], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding TipoNome}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColDescription], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding FlagsHex}" Width="95" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColFlags], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding TamanhoDescompactado}" Width="75" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColBytes], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding CompressaoTexto}" Width="70" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColComp], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GridSplitter Grid.Row="2" Height="6" HorizontalAlignment="Stretch" Background="Transparent" />
+                        <GroupBox Grid.Row="3" Header="{Binding [GrpHexInspector], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
+                            <TextBox Text="{Binding HexDumpTexto, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas" FontSize="11.5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalContentAlignment="Top" TextWrapping="NoWrap" />
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 7: GLOBAL VARIABLES -->
+                <TabItem Header="{Binding [TabGlobals], Source={x:Static core:LocalizationService.Instance}}">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                            <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                            <TextBox Text="{Binding FiltroGlobais, UpdateSourceTrigger=PropertyChanged}" />
+                        </DockPanel>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding GlobaisFiltradas}" IsReadOnly="False" BeginningEdit="DgGlobais_BeginningEdit" CellEditEnding="DgGlobais_CellEditEnding">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="FormID" Binding="{Binding FormIDHex}" Width="210" IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding NomeConhecido}" Width="180" IsReadOnly="True" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColKnownName], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding PluginNome}" Width="*" IsReadOnly="True" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColPlugin], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" Width="140" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColValueFloat], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 8: LOG -->
+                <TabItem Header="{Binding [TabLog], Source={x:Static core:LocalizationService.Instance}}">
+                    <DataGrid Margin="8" ItemsSource="{Binding Logs}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Hora}" Width="80" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColTime], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Nivel}" Width="80" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColLevel], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Mensagem}" Width="*" ><DataGridTextColumn.HeaderTemplate><DataTemplate><TextBlock Text="{Binding [ColMessage], Source={x:Static core:LocalizationService.Instance}}" Foreground="{StaticResource FrontText}" FontWeight="SemiBold" /></DataTemplate></DataGridTextColumn.HeaderTemplate></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- FOOTER STATUS BAR WITH GLOBAL UNDO/REDO + MEMORY + XAOTIX SIGNATURE -->
+        <Border Grid.Row="2" Background="{StaticResource BackHeader}" BorderBrush="{StaticResource Contorno2}" BorderThickness="0,1,0,0" Padding="10,4">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding [DevelopedBy], Source={x:Static core:LocalizationService.Instance}}" FontWeight="SemiBold" Foreground="{StaticResource CorPrincipal}" Margin="16,0,0,0" />
+                <TextBlock DockPanel.Dock="Right" Text="{Binding MemoriaTexto}" Foreground="{StaticResource FrontTextoSuave}" Margin="16,0,0,0" />
+                <TextBlock DockPanel.Dock="Right" Text="{Binding Historico.FooterSummary}" FontWeight="SemiBold" Foreground="{StaticResource FrontText}" Margin="16,0,0,0" />
+                <TextBlock Text="{Binding StatusTexto}" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

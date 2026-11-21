@@ -1,0 +1,134 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.JanelaInicial"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Title="DLM.BethesdaSaveEditor"
+        Height="680"
+        Width="1120"
+        MinHeight="540"
+        MinWidth="860"
+        WindowStartupLocation="CenterScreen"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragOver="Window_DragOver">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- TOP MENU -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="{Binding [MenuFile], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuOpen], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Ctrl+O" Click="MenuAbrirArquivo_Click" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuBatchClean], Source={x:Static core:LocalizationService.Instance}}" Click="MenuLimpezaLote_Click" />
+                <MenuItem Header="{Binding [MenuCompareSaves], Source={x:Static core:LocalizationService.Instance}}" Click="MenuCompararSaves_Click" />
+                <Separator />
+                <MenuItem Header="{Binding [MenuExit], Source={x:Static core:LocalizationService.Instance}}" InputGestureText="Alt+F4" Click="MenuSair_Click" />
+            </MenuItem>
+            <MenuItem Header="{Binding [MenuOptions], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuSettings], Source={x:Static core:LocalizationService.Instance}}" Click="MenuOpcoes_Click" />
+            </MenuItem>
+            <MenuItem Header="{Binding [MenuHelp], Source={x:Static core:LocalizationService.Instance}}">
+                <MenuItem Header="{Binding [MenuAbout], Source={x:Static core:LocalizationService.Instance}}" Click="MenuSobre_Click" />
+            </MenuItem>
+        </Menu>
+
+        <!-- MAIN CONTENT: FOLDER PICKER + SAVE LIST + PREVIEW -->
+        <Grid Grid.Row="1" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding [LblFolder], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                <ComboBox x:Name="CmbPastas" Grid.Column="1" IsEditable="True" Margin="0,0,8,0" SelectionChanged="CmbPastas_SelectionChanged" />
+                <Button Grid.Column="2" Content="{Binding [BtnBrowse], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Margin="0,0,6,0" Click="BtnEscolherPasta_Click" />
+                <Button Grid.Column="3" Content="Refresh" Style="{DynamicResource BotaoPrimario}" Click="BtnAtualizar_Click" />
+            </Grid>
+
+            <DockPanel Grid.Row="1" Margin="0,0,0,8">
+                <TextBlock Text="{Binding [LblFilter], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+                <TextBox x:Name="TxtFiltro" TextChanged="TxtFiltro_TextChanged" />
+            </DockPanel>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="330" />
+                </Grid.ColumnDefinitions>
+
+                <DataGrid x:Name="DgSaves" Grid.Column="0" RowHeight="48" SelectionChanged="DgSaves_SelectionChanged" MouseDoubleClick="DgSaves_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Preview" Width="82">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="#111827" Width="70" Height="40" CornerRadius="2">
+                                        <Image Source="{Binding Miniatura}" Stretch="Uniform" />
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Character" Binding="{Binding Personagem}" Width="135" />
+                        <DataGridTextColumn Header="Lv" Binding="{Binding Nivel}" Width="48" />
+                        <DataGridTextColumn Header="Location" Binding="{Binding Localizacao}" Width="*" />
+                        <DataGridTextColumn Header="Game" Binding="{Binding Jogo}" Width="145" />
+                        <DataGridTextColumn Header="Size" Binding="{Binding TamanhoMB}" Width="75" />
+                        <DataGridTextColumn Header="Date" Binding="{Binding DataModificacao, StringFormat=yyyy-MM-dd HH:mm}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Border Grid.Column="2" Style="{StaticResource CartaoResumo}" Margin="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="200" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Background="#111827" CornerRadius="3" Margin="0,0,0,10">
+                            <Image x:Name="ImgPreview" Stretch="Uniform" />
+                        </Border>
+
+                        <StackPanel Grid.Row="1">
+                            <TextBlock x:Name="TxtPersonagem" FontSize="18" FontWeight="Bold" Foreground="{StaticResource CorPrincipal}" TextWrapping="Wrap" />
+                            <TextBlock x:Name="TxtJogo" Foreground="{StaticResource FrontTextoSuave}" Margin="0,2,0,8" />
+                            <TextBlock x:Name="TxtDetalhes" TextWrapping="Wrap" LineHeight="20" />
+                            <TextBlock x:Name="TxtArquivo" Foreground="{StaticResource FrontTextoSuave}" FontSize="11" TextWrapping="Wrap" Margin="0,10,0,0" />
+                        </StackPanel>
+
+                        <Button x:Name="BtnAbrirSelecionado"
+                                Grid.Row="2"
+                                Content="{Binding [BtnOpenSave], Source={x:Static core:LocalizationService.Instance}}"
+                                IsEnabled="False"
+                                Height="34"
+                                Click="BtnAbrirSelecionado_Click" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- STATUS BAR -->
+        <Border Grid.Row="2" Background="{StaticResource BackHeader}" BorderBrush="{StaticResource Contorno2}" BorderThickness="0,1,0,0" Padding="10,4">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right"
+                           Text="{Binding [DevelopedBy], Source={x:Static core:LocalizationService.Instance}}"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource CorPrincipal}"
+                           Margin="16,0,0,0" />
+                <TextBlock x:Name="TxtStatus" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

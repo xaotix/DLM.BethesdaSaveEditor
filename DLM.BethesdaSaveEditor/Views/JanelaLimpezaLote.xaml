@@ -1,0 +1,52 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.JanelaLimpezaLote"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Title="{Binding [BatchTitle], Source={x:Static core:LocalizationService.Instance}}"
+        Height="470"
+        Width="700"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding [LblFolder], Source={x:Static core:LocalizationService.Instance}}" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" />
+            <TextBox x:Name="TxtPasta" Grid.Column="1" Margin="0,0,6,0" />
+            <Button Grid.Column="2" Content="{Binding [BtnBrowse], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Click="BtnProcurar_Click" />
+        </Grid>
+
+        <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+            <CheckBox x:Name="ChkUnattached" Content="Unattached instances" IsChecked="True" Margin="0,0,16,0" />
+            <CheckBox x:Name="ChkUndefined" Content="Undefined elements" IsChecked="True" Margin="0,0,16,0" />
+            <CheckBox x:Name="ChkNonExistent" Content="Non-existent created forms" IsChecked="True" Margin="0,0,16,0" />
+            <CheckBox x:Name="ChkBackup" Content="Create backup (.bak)" IsChecked="True" />
+        </WrapPanel>
+
+        <ProgressBar x:Name="PrgLote" Grid.Row="2" Minimum="0" Maximum="100" Margin="0,0,0,8" />
+
+        <TextBox x:Name="TxtRelatorio"
+                 Grid.Row="3"
+                 IsReadOnly="True"
+                 FontFamily="Consolas"
+                 FontSize="11.5"
+                 VerticalScrollBarVisibility="Auto"
+                 VerticalContentAlignment="Top"
+                 TextWrapping="Wrap" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="{Binding [BtnClose], Source={x:Static core:LocalizationService.Instance}}" Style="{DynamicResource BotaoPrimario}" Width="90" IsCancel="True" />
+            <Button x:Name="BtnExecutar" Content="{Binding [BtnRunClean], Source={x:Static core:LocalizationService.Instance}}" Width="140" Click="BtnExecutar_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

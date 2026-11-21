@@ -1,0 +1,32 @@
+﻿<Window x:Class="DLM.BethesdaSaveEditor.Views.JanelaInputValor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:DLM.BethesdaSaveEditor.Core"
+        Height="185"
+        Width="440"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="TxtPrompt" Grid.Row="0" FontWeight="SemiBold" Margin="0,0,0,8" TextWrapping="Wrap" />
+        <TextBox x:Name="TxtValor" Grid.Row="1" Margin="0,0,0,8" />
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{Binding [BtnCancel], Source={x:Static core:LocalizationService.Instance}}"
+                    Style="{DynamicResource BotaoPrimario}"
+                    Width="90"
+                    IsCancel="True" />
+            <Button Content="{Binding [BtnConfirm], Source={x:Static core:LocalizationService.Instance}}"
+                    Width="100"
+                    IsDefault="True"
+                    Click="BtnConfirmar_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
+
