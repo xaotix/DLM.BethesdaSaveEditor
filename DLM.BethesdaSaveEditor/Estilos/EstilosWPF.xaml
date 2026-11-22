@@ -266,7 +266,6 @@
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource CorPrincipal}" />
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorPrincipal}" />
                             <Setter TargetName="Bd" Property="TextElement.Foreground" Value="{StaticResource FrontTextoBranco}" />
-                            <Setter Property="Foreground" Value="{StaticResource FrontTextoBranco}" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

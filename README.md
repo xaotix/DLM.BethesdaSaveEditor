@@ -16,37 +16,83 @@ A fast, native Windows **WPF (.NET Framework 4.8 / C# 7.3)** savegame editor, an
 
 ---
 
-## Key Features
+## Screens & Feature Guide
 
-### 1. Visual Save Launcher (Startup Browser)
-- Automatically detects your `Documents\My Games\...\Saves` folders for Skyrim SE, Skyrim LE, Skyrim VR, Fallout 4, and Fallout 4 VR.
-- Displays save thumbnails, character name, level, location, game version, size, and date.
-- **Double-click** any save to open it in the full editor (or drag-and-drop any `.ess` / `.fos` / `.sav0` file).
+### 1. Startup Save Browser
+When you launch the application, it opens the visual Save Browser. It automatically detects your default `Documents\My Games\...\Saves` folders for **Skyrim SE, Skyrim LE, Skyrim VR, Fallout 4, and Fallout 4 VR**, or lets you pick any custom folder.
+- Displays save thumbnails, character name, level, location, game edition, file size, and timestamp.
+- Shows a large preview panel on the right for the selected save.
+- **Double-click** any save (or click **Open Save**) to launch the full editor.
+
+![Startup Save Browser](docs/images/01-startup-browser.png)
+
+---
 
 ### 2. Character & Global Properties Editor
-- **Direct Binary Character Editing (`NPC_` `00000007` + Header):**
-  - Edit **Level**, **Base Health**, **Base Magicka**, **Base Stamina**, **Magicka/Stamina Offsets**, and **all 18 Base Skills + Skill Bonuses**.
-- **Curated Global Properties (Skyrim SE & Fallout 4):**
-  - Clear descriptions & safe ranges for `TimeScale`, `GameHour`, `GameDaysPassed`, `GameDay`, `GameMonth`, `GameYear`, `PlayerIsVampire`, `PlayerIsWerewolf`, `PlayerFollowerCount`, `PlayerAnimalCount`, `PlayerHasHouseWhiterun`, `HC_Rule_SurvivalMode`, and more.
-- **Console Batch Script Generator:**
-  - Export a ready-to-use `.txt` script (`bat`) for runtime ActorValues such as **Carry Weight**, **Dragon Souls**, **Gold / Bottlecaps**, and **Perk Points**.
+The main editor opens with a persistent left sidebar showing the save screenshot, character metadata, compression type, integrity status, and a **Save Health Score (0–100)** that flags script bloat or orphaned references.
+- **Character Attributes (Direct Binary Edit):** Directly patches the player `NPC_` (`00000007`) ChangeForm and save header for **Level**, **Base Health**, **Base Magicka**, **Base Stamina**, and **Magicka/Stamina Bonuses**.
+- **Base Skills (NPC DNAM):** Edit all 18 base skill levels and skill bonuses directly in the grid.
+- **Editable Global Properties (Skyrim SE / Fallout 4):** Curated list of safe global variables (`TimeScale`, `GameHour`, `GameDaysPassed`, `GameDay`, `GameMonth`, `GameYear`, `PlayerIsVampire`, `PlayerIsWerewolf`, `PlayerFollowerCount`, `PlayerAnimalCount`, `PlayerHasHouseWhiterun`, `HC_Rule_SurvivalMode`, etc.) with descriptions and recommended ranges.
+- **Console Batch Script Generator:** Exports a ready-to-use `.txt` batch file (`bat`) for runtime ActorValues such as **Carry Weight**, **Dragon Souls**, **Gold / Caps**, and **Perk Points**.
+- **Global Undo / Redo (`Ctrl+Z` / `Ctrl+Y`):** Tracked live in the bottom status bar across all edits.
+
+![Character & Global Properties Editor](docs/images/02-character-properties.png)
+
+---
 
 ### 3. Quest Bug Fixer (Skyrim SE & Fallout 4)
-- Built-in catalog of the most notorious bugged quests in **Skyrim SE** (*Blood on the Ice `MS11`*, *Unbound `MQ101`*, *Bleak Falls Barrow `MQ103`*, *Dragon Rising `MQ104`*, *The Way of the Voice `MQ105`*, *A Blade in the Dark `MQ106`*, *Diplomatic Immunity `MQ201`*, *Alduin's Bane `MQ206`*, *In My Time of Need `MS08`*, *The Mind of Madness `DA15`*, *Discerning the Transmundane `DA04`*) and **Fallout 4** (*When Freedom Calls `Min00`*, *Out of Time `MQ102`*, *Jewel of the Commonwealth `MQ103`*, *Unlikely Valentine `MQ104`*, *Reunions `MQ106`*, *Fire Support `BoS100`*, *The Molecular Level `MQ206`*, *The Secret of Cabot House `MS09`*).
-- Scans your save's `QUST` ChangeForms to show real quest status and applies **direct binary stage fixes** or copies the exact `setstage` console command.
+A built-in catalog of the most common progression-blocking quests in **Skyrim SE** (*Blood on the Ice `MS11`*, *Unbound `MQ101`*, *Bleak Falls Barrow `MQ103`*, *Dragon Rising `MQ104`*, *The Way of the Voice `MQ105`*, *A Blade in the Dark `MQ106`*, *Diplomatic Immunity `MQ201`*, *Alduin's Bane `MQ206`*, *In My Time of Need `MS08`*, *The Mind of Madness `DA15`*, *Discerning the Transmundane `DA04`*) and **Fallout 4** (*When Freedom Calls `Min00`*, *Out of Time `MQ102`*, *Jewel of the Commonwealth `MQ103`*, *Unlikely Valentine `MQ104`*, *Reunions `MQ106`*, *Fire Support `BoS100`*, *The Molecular Level `MQ206`*, *The Secret of Cabot House `MS09`*).
+- Scans the loaded save's `QUST` ChangeForms to show each quest's real state (`Active / Running`, `Completed`, or `Not started`).
+- Lets you either **Apply Binary Quest Fix** directly to the save or **Copy Console Command** (`setstage`) to paste in-game.
 
-### 4. Save Health Diagnostics, Cleaning & Mod Impact
-- **Health Score (0–100):** Automatically flags unattached script instances, undefined Papyrus elements/threads, Skyrim LE 65,535 string table limit warnings, and plugin slot usage.
-- **One-Click & Batch Cleaning:** Remove unattached instances, undefined elements, non-existent created form instances, and purify FormLists (`FLST` null refs).
-- **Plugin Impact Analysis:** Breakdown of every ESP/ESM/ESL plugin's ChangeForm count, ScriptInstance count, size in KB, and `%` of total save size.
+![Quest Bug Fixer](docs/images/03-quest-bug-fixer.png)
 
-### 5. Deep Binary Editors
-- **Papyrus Editor:** Edit ScriptInstance variables (`Int`, `Float`, `Bool`, `String`, `Ref`), edit Papyrus Arrays (`Add`, `Remove`, `Shift Up/Down`), terminate/delete Active Script Threads, and edit/add String Table entries.
-- **ChangeForms & Hex Inspector:** Interactive **32-bit ChangeFlags Bit Editor**, raw Hex/ASCII inspector, and ChangeForm deletion.
-- **Misc Stats & Player Location:** Edit all 108+ Misc Stats inline, clear all Crime Bounties in one click, and edit Player World Coordinates (`X/Y/Z`, `Cell X/Y`) & save compression (`Uncompressed`, `ZLIB`, `LZ4`).
-- **Save Comparator:** Compare two saves side-by-side (size, stats, Papyrus counts, added/removed plugins).
-- **Global Undo / Redo (`Ctrl+Z` / `Ctrl+Y`):** Full undo/redo history across all edits, shown live in the footer bar.
-- **Multi-Language UI:** English (default), Portuguese (Brazil), and Spanish (`Options -> Settings...`).
+---
+
+### 4. Plugins & Save Impact Analysis
+Shows a high-level summary of loaded full (`ESP`/`ESM`) and light (`ESL`) plugins, total ChangeForm records, and Papyrus VM footprint (scripts, instances, active threads, and string table usage).
+- Breaks down every plugin's **ChangeForms**, **Script Instances**, **Size (KB)**, and **% of total save size** so you can immediately identify heavy or bloated mods.
+
+![Plugins & Impact](docs/images/04-plugins-impact.png)
+
+---
+
+### 5. Papyrus VM Editor
+Deep inspection and editing of the embedded Papyrus virtual machine block across four sub-tabs:
+- **Script Instances:** Filter by name, **Unattached only**, or **Undefined only**; delete orphaned instances; inspect and edit instance variables (`Int`, `Float`, `Bool`, `String`, `Ref`).
+- **Arrays:** Browse Papyrus arrays and edit, add, remove, or reorder elements (`Shift Up` / `Shift Down`).
+- **Scripts & Active Threads:** Inspect running script threads and terminate or delete stuck threads.
+- **String Table:** Search, edit, or add strings in the Papyrus string table (with Skyrim LE 65,535-string limit monitoring).
+
+![Papyrus Editor](docs/images/05-papyrus-editor.png)
+
+---
+
+### 6. ChangeForms & Hexadecimal Inspector
+Inspects all compressed and uncompressed ChangeForm records in the save (`FACT`, `NPC_`, `QUST`, `ACHR`, `REFR`, `FLST`, etc.).
+- Search by FormID, plugin name, or record type.
+- View the live **Hexadecimal & ASCII Inspector** for any selected record.
+- Delete corrupted ChangeForms or open the interactive **ChangeFlags Editor**.
+
+![ChangeForms & Hex Inspector](docs/images/06-changeforms-hex.png)
+
+---
+
+### 7. Interactive 32-Bit ChangeFlags Editor
+Clicking **Edit ChangeFlags...** opens a visual 32-bit flag mask editor where you can toggle individual bits (`Bit 0`–`Bit 31`) or type a hexadecimal mask directly.
+
+![32-Bit ChangeFlags Editor](docs/images/07-changeflags-editor.png)
+
+---
+
+## Additional Tools & Safety Features
+
+- **Misc Stats & Crime Bounties (`Misc Stats` tab):** Edit all 108+ Misc Stats inline or clear all Crime Bounties in one click.
+- **Global Variables (`Global Variables` tab):** Inline float editing for all save global variables with known vanilla names.
+- **One-Click & Batch Cleaning (`Clean` menu):** Remove unattached script instances, undefined elements, non-existent created form instances, purify FormLists (`FLST` null references), or batch-clean an entire folder of saves.
+- **Header, Player Location & Compression (`Tools -> Edit Header & Location...`):** Edit player world coordinates (`X/Y/Z`, `Cell X/Y`) and switch save compression (`Uncompressed`, `ZLIB`, `LZ4`).
+- **Save Comparator (`Tools -> Compare Two Saves...`):** Compare two saves side-by-side (size, stats, Papyrus counts, added/removed plugins).
+- **Multi-Language UI (`Options -> Settings...`):** Switch live between **English**, **Portuguese (Brazil)**, and **Spanish**.
 - **Automatic Backups:** Creates timestamped `.bak` backups and preserves SKSE/F4SE co-saves before every save.
 
 ---
