@@ -49,3 +49,4 @@ jobs:
           files: |
             dist/DLM.BethesdaSaveEditor.exe
             dist/DLM.BethesdaSaveEditor.zip
+
