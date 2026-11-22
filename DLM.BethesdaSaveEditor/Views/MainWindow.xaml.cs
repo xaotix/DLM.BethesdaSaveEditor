@@ -267,20 +267,6 @@ namespace DLM.BethesdaSaveEditor.Views
         private void BtnAplicarPersonagem_Click(object sender, RoutedEventArgs e) => _vm.AplicarAlteracoesPersonagem();
         private void BtnAplicarGlobalPreset_Click(object sender, RoutedEventArgs e) => _vm.AplicarGlobalPresetSelecionado();
 
-        private void BtnExportarBat_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Export Console Batch Script";
-            dlg.FileName = "xaotix_boost.txt";
-            dlg.Filter = "Console Batch Script (*.txt)|*.txt";
-            if (dlg.ShowDialog(this) == true)
-            {
-                _vm.ExportarScriptConsoleBat(dlg.FileName);
-                MessageBox.Show("Console script generated.\nIn-game, press ~ and type: bat " + Path.GetFileNameWithoutExtension(dlg.FileName),
-                    "Console Script", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
-
         private void BtnCorrigirQuest_Click(object sender, RoutedEventArgs e) => _vm.AplicarCorrecaoQuestSelecionada();
 
         private void BtnCopiarComandoQuest_Click(object sender, RoutedEventArgs e)

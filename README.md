@@ -30,10 +30,12 @@ When you launch the application, it opens the visual Save Browser. It automatica
 
 ### 2. Character & Global Properties Editor
 The main editor opens with a persistent left sidebar showing the save screenshot, character metadata, compression type, integrity status, and a **Save Health Score (0–100)** that flags script bloat or orphaned references.
-- **Character Attributes (Direct Binary Edit):** Directly patches the player `NPC_` (`00000007`) ChangeForm and save header for **Level**, **Base Health**, **Base Magicka**, **Base Stamina**, and **Magicka/Stamina Bonuses**.
-- **Base Skills (NPC DNAM):** Edit all 18 base skill levels and skill bonuses directly in the grid.
+- **Player Attributes & Inventory (Direct Binary Save Edit — `ACHR 00000014`):** Directly edits the player reference (`ACHR 00000014`) in-place without requiring any console scripts:
+  - **Skyrim (LE / SE / VR / Switch):** **Level**, **Current XP**, **Health**, **Magicka**, **Stamina**, **Carry Weight**, **Speed (%)**, **Dragon Souls**, **Gold (Septims)**, and **Lockpicks**.
+  - **Fallout 4 (Standard & VR):** **Level**, **Current XP**, **Health**, **Action Points (AP)**, **Rads**, **Carry Weight**, **Speed (%)**, **Bottlecaps**, and **Bobby Pins**.
+- **Skills & Legendary (Skyrim) / S.P.E.C.I.A.L. (Fallout 4):** Edit all **18 Skyrim Skills + Legendary counts** (synchronized across `ACHR 00000014` ActorValues, `PlayerSkills`, and `NPC_ 00000007`) or all **7 Fallout 4 S.P.E.C.I.A.L.** attributes directly in the save.
+- **All Actor Values (`ACHR`):** Inspect and edit every Actor Value stored on the player reference (`Health`, `Magicka`, `Stamina`, `CarryWeight`, `SpeedMult`, `DamageResist`, `DragonSouls`, etc.).
 - **Editable Global Properties (Skyrim SE / Fallout 4):** Curated list of safe global variables (`TimeScale`, `GameHour`, `GameDaysPassed`, `GameDay`, `GameMonth`, `GameYear`, `PlayerIsVampire`, `PlayerIsWerewolf`, `PlayerFollowerCount`, `PlayerAnimalCount`, `PlayerHasHouseWhiterun`, `HC_Rule_SurvivalMode`, etc.) with descriptions and recommended ranges.
-- **Console Batch Script Generator:** Exports a ready-to-use `.txt` batch file (`bat`) for runtime ActorValues such as **Carry Weight**, **Dragon Souls**, **Gold / Caps**, and **Perk Points**.
 - **Global Undo / Redo (`Ctrl+Z` / `Ctrl+Y`):** Tracked live in the bottom status bar across all edits.
 
 ![Character & Global Properties Editor](docs/images/02-character-properties.png)

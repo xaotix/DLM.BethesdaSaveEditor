@@ -41,20 +41,28 @@ namespace DLM.BethesdaSaveEditor.ViewModels
         private string _resumoChangeForms = "-";
         private string _resumoPlugins = "-";
 
-        // Character Binary Edit fields
+        // Character Direct Binary Edit fields (ACHR 00000014 + NPC_ 00000007 + Header)
         private int _editLevel;
-        private int _editBaseHealth;
-        private int _editBaseMagicka;
-        private int _editBaseStamina;
-        private int _editMagickaOffset;
-        private int _editStaminaOffset;
+        private float _editCurrentXp;
+        private float _editHealth;
+        private float _editSecondaryAttr;
+        private float _editTertiaryAttr;
+        private float _editCarryWeight;
+        private float _editSpeedMult;
+        private float _editDragonSouls;
+        private int _editCurrency;
+        private int _editLockpicks;
         private bool _possuiPlayerNpc;
-
-        // Console batch extras
-        private int _extraCarryWeight = 500;
-        private int _extraDragonSouls = 10;
-        private int _extraGold = 10000;
-        private int _extraPerks = 5;
+        private bool _possuiActorValues;
+        private bool _possuiCurrency;
+        private bool _possuiLockpicks;
+        private bool _possuiDragonSouls;
+        private bool _isSkyrimSave = true;
+        private string _labelSecondaryAttr = "Magicka:";
+        private string _labelTertiaryAttr = "Stamina:";
+        private string _labelCurrency = "Gold (Septims):";
+        private string _labelLockpicks = "Lockpicks:";
+        private string _labelSkillsTab = "18 Skills & Legendary";
 
         // Filters
         private string _filtroPlugins = string.Empty;
@@ -123,16 +131,26 @@ namespace DLM.BethesdaSaveEditor.ViewModels
         public string ResumoPlugins { get => _resumoPlugins; set => SetProperty(ref _resumoPlugins, value); }
 
         public int EditLevel { get => _editLevel; set => SetProperty(ref _editLevel, value); }
-        public int EditBaseHealth { get => _editBaseHealth; set => SetProperty(ref _editBaseHealth, value); }
-        public int EditBaseMagicka { get => _editBaseMagicka; set => SetProperty(ref _editBaseMagicka, value); }
-        public int EditBaseStamina { get => _editBaseStamina; set => SetProperty(ref _editBaseStamina, value); }
-        public int EditMagickaOffset { get => _editMagickaOffset; set => SetProperty(ref _editMagickaOffset, value); }
-        public int EditStaminaOffset { get => _editStaminaOffset; set => SetProperty(ref _editStaminaOffset, value); }
+        public float EditCurrentXp { get => _editCurrentXp; set => SetProperty(ref _editCurrentXp, value); }
+        public float EditHealth { get => _editHealth; set => SetProperty(ref _editHealth, value); }
+        public float EditSecondaryAttr { get => _editSecondaryAttr; set => SetProperty(ref _editSecondaryAttr, value); }
+        public float EditTertiaryAttr { get => _editTertiaryAttr; set => SetProperty(ref _editTertiaryAttr, value); }
+        public float EditCarryWeight { get => _editCarryWeight; set => SetProperty(ref _editCarryWeight, value); }
+        public float EditSpeedMult { get => _editSpeedMult; set => SetProperty(ref _editSpeedMult, value); }
+        public float EditDragonSouls { get => _editDragonSouls; set => SetProperty(ref _editDragonSouls, value); }
+        public int EditCurrency { get => _editCurrency; set => SetProperty(ref _editCurrency, value); }
+        public int EditLockpicks { get => _editLockpicks; set => SetProperty(ref _editLockpicks, value); }
 
-        public int ExtraCarryWeight { get => _extraCarryWeight; set => SetProperty(ref _extraCarryWeight, value); }
-        public int ExtraDragonSouls { get => _extraDragonSouls; set => SetProperty(ref _extraDragonSouls, value); }
-        public int ExtraGold { get => _extraGold; set => SetProperty(ref _extraGold, value); }
-        public int ExtraPerks { get => _extraPerks; set => SetProperty(ref _extraPerks, value); }
+        public bool PossuiActorValues { get => _possuiActorValues; set => SetProperty(ref _possuiActorValues, value); }
+        public bool PossuiCurrency { get => _possuiCurrency; set => SetProperty(ref _possuiCurrency, value); }
+        public bool PossuiLockpicks { get => _possuiLockpicks; set => SetProperty(ref _possuiLockpicks, value); }
+        public bool PossuiDragonSouls { get => _possuiDragonSouls; set => SetProperty(ref _possuiDragonSouls, value); }
+        public bool IsSkyrimSave { get => _isSkyrimSave; set => SetProperty(ref _isSkyrimSave, value); }
+        public string LabelSecondaryAttr { get => _labelSecondaryAttr; set => SetProperty(ref _labelSecondaryAttr, value); }
+        public string LabelTertiaryAttr { get => _labelTertiaryAttr; set => SetProperty(ref _labelTertiaryAttr, value); }
+        public string LabelCurrency { get => _labelCurrency; set => SetProperty(ref _labelCurrency, value); }
+        public string LabelLockpicks { get => _labelLockpicks; set => SetProperty(ref _labelLockpicks, value); }
+        public string LabelSkillsTab { get => _labelSkillsTab; set => SetProperty(ref _labelSkillsTab, value); }
 
         public string FiltroPlugins { get => _filtroPlugins; set { if (SetProperty(ref _filtroPlugins, value)) AtualizarListaPlugins(); } }
         public string FiltroMiscStats { get => _filtroMiscStats; set { if (SetProperty(ref _filtroMiscStats, value)) AtualizarListaMiscStats(); } }
@@ -171,6 +189,7 @@ namespace DLM.BethesdaSaveEditor.ViewModels
 
         public ObservableCollection<string> AlertasSaude { get; } = new ObservableCollection<string>();
         public ObservableCollection<PlayerSkillItem> PlayerSkills { get; } = new ObservableCollection<PlayerSkillItem>();
+        public ObservableCollection<PlayerActorValueItem> PlayerActorValues { get; } = new ObservableCollection<PlayerActorValueItem>();
         public ObservableCollection<GlobalPropertyPreset> GlobalPresets { get; } = new ObservableCollection<GlobalPropertyPreset>();
         public ObservableCollection<QuestBugFixItem> QuestFixesFiltradas { get; } = new ObservableCollection<QuestBugFixItem>();
         public ObservableCollection<PluginImpactItem> PluginsImpacto { get; } = new ObservableCollection<PluginImpactItem>();
@@ -276,16 +295,44 @@ namespace DLM.BethesdaSaveEditor.ViewModels
         private void SincronizarCamposPlayerNpc()
         {
             if (_saveAtual == null) return;
+            bool isFo4 = _saveAtual.Header.Game.EhFallout4();
+            IsSkyrimSave = !isFo4;
+            LabelSecondaryAttr = isFo4 ? "Action Points:" : "Magicka:";
+            LabelTertiaryAttr = isFo4 ? "Rads:" : "Stamina:";
+            LabelCurrency = isFo4 ? "Bottlecaps:" : "Gold (Septims):";
+            LabelLockpicks = isFo4 ? "Bobby Pins:" : "Lockpicks:";
+            LabelSkillsTab = isFo4 ? "S.P.E.C.I.A.L." : "18 Skills & Legendary";
+
             EditLevel = _saveAtual.Header.Level;
+            EditCurrentXp = _saveAtual.Header.CurrentXp;
             PlayerSkills.Clear();
+            PlayerActorValues.Clear();
+
             if (_playerNpc != null && _playerNpc.IsAvailable)
             {
-                EditBaseHealth = _playerNpc.BaseHealth;
-                EditBaseMagicka = _playerNpc.BaseMagicka;
-                EditBaseStamina = _playerNpc.BaseStamina;
-                EditMagickaOffset = _playerNpc.AcbsMagickaOffset;
-                EditStaminaOffset = _playerNpc.AcbsStaminaOffset;
+                PossuiActorValues = _playerNpc.HasActorValues;
+                PossuiCurrency = _playerNpc.HasCurrency;
+                PossuiLockpicks = _playerNpc.HasLockpicks;
+                PossuiDragonSouls = _playerNpc.HasDragonSouls;
+
+                EditHealth = _playerNpc.Health;
+                EditSecondaryAttr = _playerNpc.SecondaryAttr;
+                EditTertiaryAttr = _playerNpc.TertiaryAttr;
+                EditCarryWeight = _playerNpc.CarryWeight;
+                EditSpeedMult = _playerNpc.SpeedMult;
+                EditDragonSouls = _playerNpc.DragonSouls;
+                EditCurrency = _playerNpc.CurrencyCount;
+                EditLockpicks = _playerNpc.LockpicksCount;
+
                 foreach (PlayerSkillItem sk in _playerNpc.Skills) PlayerSkills.Add(sk);
+                foreach (PlayerActorValueItem av in _playerNpc.ActorValues) PlayerActorValues.Add(av);
+            }
+            else
+            {
+                PossuiActorValues = false;
+                PossuiCurrency = false;
+                PossuiLockpicks = false;
+                PossuiDragonSouls = false;
             }
         }
 
@@ -555,41 +602,46 @@ namespace DLM.BethesdaSaveEditor.ViewModels
         {
             if (_saveAtual == null) return;
 
-            int oldLevel = _saveAtual.Header.Level;
             int newLevel = Math.Max(1, EditLevel);
-            byte[] oldNpcSnap = _playerNpc != null && _playerNpc.IsAvailable ? _playerNpc.CaptureSnapshot() : null;
+            float newXp = Math.Max(0f, EditCurrentXp);
+            PlayerSnapshot oldSnap = _playerNpc != null ? _playerNpc.CaptureSnapshot(_saveAtual) : null;
 
-            _saveAtual.Header.Level = newLevel;
             if (_playerNpc != null && _playerNpc.IsAvailable)
             {
-                _playerNpc.AcbsLevel = (ushort)Math.Min(65535, newLevel);
-                _playerNpc.BaseHealth = (ushort)Math.Max(1, Math.Min(65535, EditBaseHealth));
-                _playerNpc.BaseMagicka = (ushort)Math.Max(0, Math.Min(65535, EditBaseMagicka));
-                _playerNpc.BaseStamina = (ushort)Math.Max(0, Math.Min(65535, EditBaseStamina));
-                _playerNpc.AcbsMagickaOffset = (ushort)Math.Max(0, Math.Min(65535, EditMagickaOffset));
-                _playerNpc.AcbsStaminaOffset = (ushort)Math.Max(0, Math.Min(65535, EditStaminaOffset));
-                _playerNpc.ApplyToSave(_saveAtual);
+                _playerNpc.Health = Math.Max(1f, EditHealth);
+                _playerNpc.SecondaryAttr = Math.Max(0f, EditSecondaryAttr);
+                _playerNpc.TertiaryAttr = Math.Max(0f, EditTertiaryAttr);
+                _playerNpc.CarryWeight = Math.Max(1f, EditCarryWeight);
+                _playerNpc.SpeedMult = Math.Max(1f, EditSpeedMult);
+                _playerNpc.DragonSouls = Math.Max(0f, EditDragonSouls);
+                _playerNpc.CurrencyCount = Math.Max(0, EditCurrency);
+                _playerNpc.LockpicksCount = Math.Max(0, EditLockpicks);
+                _playerNpc.ApplyToSave(_saveAtual, newLevel, newXp);
             }
-            _saveAtual.HasChanges = true;
-            byte[] newNpcSnap = _playerNpc != null && _playerNpc.IsAvailable ? _playerNpc.CaptureSnapshot() : null;
+            else
+            {
+                _saveAtual.Header.Level = newLevel;
+                _saveAtual.Header.CurrentXp = newXp;
+                _saveAtual.HasChanges = true;
+            }
 
-            Historico.Record(
-                "Edit Character Stats/Skills",
-                () =>
-                {
-                    _saveAtual.Header.Level = oldLevel;
-                    if (_playerNpc != null && oldNpcSnap != null) _playerNpc.RestoreSnapshot(oldNpcSnap, _saveAtual);
-                },
-                () =>
-                {
-                    _saveAtual.Header.Level = newLevel;
-                    if (_playerNpc != null && newNpcSnap != null) _playerNpc.RestoreSnapshot(newNpcSnap, _saveAtual);
-                });
+            PlayerSnapshot newSnap = _playerNpc != null ? _playerNpc.CaptureSnapshot(_saveAtual) : null;
 
+            if (oldSnap != null && newSnap != null)
+            {
+                Historico.Record(
+                    "Edit Character Attributes / Skills / Inventory",
+                    () => { _playerNpc.RestoreSnapshot(oldSnap, _saveAtual); },
+                    () => { _playerNpc.RestoreSnapshot(newSnap, _saveAtual); });
+            }
+
+            SincronizarCamposPlayerNpc();
             AtualizarTudoNaInterface();
-            StatusTexto = "Character attributes & skills applied.";
-            RegistrarLog("EDIT", string.Format("Character updated: Lv={0}, HP={1}, MP={2}, SP={3}", newLevel, EditBaseHealth, EditBaseMagicka, EditBaseStamina));
-            MessageBox.Show("Character attributes & skills updated in save binary.", "Character Editor", MessageBoxButton.OK, MessageBoxImage.Information);
+            StatusTexto = "Character attributes, skills & inventory updated directly in save.";
+            RegistrarLog("EDIT", string.Format("Player ACHR 0x14 updated: Lv={0}, HP={1}, {2}={3}, {4}={5}, CW={6}, Currency={7}",
+                newLevel, EditHealth, LabelSecondaryAttr.TrimEnd(':'), EditSecondaryAttr, LabelTertiaryAttr.TrimEnd(':'), EditTertiaryAttr, EditCarryWeight, EditCurrency));
+            MessageBox.Show("Character attributes, skills & inventory written directly to save binary (ACHR 00000014).",
+                "Character Editor", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void AplicarGlobalPresetSelecionado()
@@ -617,38 +669,6 @@ namespace DLM.BethesdaSaveEditor.ViewModels
             AtualizarTudoNaInterface();
             StatusTexto = string.Format("Updated {0} = {1}", name, newVal);
             RegistrarLog("EDIT", StatusTexto);
-        }
-
-        public void ExportarScriptConsoleBat(string filePath)
-        {
-            bool isFo4 = _saveAtual != null && _saveAtual.Header.Game.EhFallout4();
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("; Generated by DLM.BethesdaSaveEditor (xaotix)");
-            sb.AppendLine("; Place in game root folder and run in console: bat " + Path.GetFileNameWithoutExtension(filePath));
-            sb.AppendLine();
-
-            if (isFo4)
-            {
-                if (EditLevel > 0) sb.AppendLine("player.setlevel " + EditLevel);
-                if (EditBaseHealth > 0) sb.AppendLine("player.setav health " + EditBaseHealth);
-                if (EditBaseStamina > 0) sb.AppendLine("player.setav actionpoints " + EditBaseStamina);
-                if (ExtraCarryWeight > 0) sb.AppendLine("player.setav carryweight " + ExtraCarryWeight);
-                if (ExtraGold > 0) sb.AppendLine("player.additem 0000000F " + ExtraGold + " ; Bottlecaps");
-            }
-            else
-            {
-                if (EditLevel > 0) sb.AppendLine("player.setlevel " + EditLevel);
-                if (EditBaseHealth > 0) sb.AppendLine("player.setav health " + EditBaseHealth);
-                if (EditBaseMagicka > 0) sb.AppendLine("player.setav magicka " + EditBaseMagicka);
-                if (EditBaseStamina > 0) sb.AppendLine("player.setav stamina " + EditBaseStamina);
-                if (ExtraCarryWeight > 0) sb.AppendLine("player.setav carryweight " + ExtraCarryWeight);
-                if (ExtraDragonSouls > 0) sb.AppendLine("player.setav dragonsouls " + ExtraDragonSouls);
-                if (ExtraGold > 0) sb.AppendLine("player.additem 0000000F " + ExtraGold + " ; Gold");
-                if (ExtraPerks > 0) sb.AppendLine("; Tip: To gain " + ExtraPerks + " perk points, level up skills via player.advskill or use SKSE mod");
-            }
-
-            File.WriteAllText(filePath, sb.ToString(), Encoding.ASCII);
-            RegistrarLog("EXPORT", "Console batch script exported: " + filePath);
         }
 
         // === QUEST BUG FIXER ===

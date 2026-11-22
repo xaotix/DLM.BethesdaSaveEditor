@@ -172,15 +172,14 @@
                             <ColumnDefinition Width="1.25*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- LEFT: DIRECT BINARY CHARACTER ATTRIBUTES + 18 SKILLS -->
+                        <!-- LEFT: DIRECT BINARY PLAYER ACHR 00000014 ATTRIBUTES, CURRENCY, SKILLS & ALL ACTOR VALUES -->
                         <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <GroupBox Grid.Row="0" Header="{Binding [GrpBaseAttributes], Source={x:Static core:LocalizationService.Instance}}" Margin="0,0,0,6">
+                            <GroupBox Grid.Row="0" Header="Player Attributes &amp; Inventory (Direct Save Edit - ACHR 00000014)" Margin="0,0,0,6">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="105" />
@@ -189,6 +188,8 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -198,22 +199,34 @@
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Level:" VerticalAlignment="Center" Margin="0,3" />
                                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditLevel, UpdateSourceTrigger=PropertyChanged}" Margin="2,3,8,3" />
 
-                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Base Health:" VerticalAlignment="Center" Margin="0,3" />
-                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding EditBaseHealth, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Current XP:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding EditCurrentXp, UpdateSourceTrigger=PropertyChanged}" Margin="2,3" />
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Base Magicka:" VerticalAlignment="Center" Margin="0,3" />
-                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditBaseMagicka, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3,8,3" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Health:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditHealth, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiActorValues}" Margin="2,3,8,3" />
 
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Base Stamina:" VerticalAlignment="Center" Margin="0,3" />
-                                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding EditBaseStamina, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding LabelSecondaryAttr}" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding EditSecondaryAttr, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiActorValues}" Margin="2,3" />
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Magicka Bonus:" VerticalAlignment="Center" Margin="0,3" />
-                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditMagickaOffset, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3,8,3" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding LabelTertiaryAttr}" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditTertiaryAttr, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiActorValues}" Margin="2,3,8,3" />
 
-                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Stamina Bonus:" VerticalAlignment="Center" Margin="0,3" />
-                                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding EditStaminaOffset, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiPlayerNpc}" Margin="2,3" />
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Carry Weight:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding EditCarryWeight, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiActorValues}" Margin="2,3" />
 
-                                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Speed (%):" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EditSpeedMult, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiActorValues}" Margin="2,3,8,3" />
+
+                                    <TextBlock Grid.Row="3" Grid.Column="2" Text="Dragon Souls:" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding EditDragonSouls, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiDragonSouls}" Margin="2,3" />
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding LabelCurrency}" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EditCurrency, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiCurrency}" Margin="2,3,8,3" />
+
+                                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding LabelLockpicks}" VerticalAlignment="Center" Margin="0,3" />
+                                    <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding EditLockpicks, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding PossuiLockpicks}" Margin="2,3" />
+
+                                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4"
                                             Content="{Binding [BtnApplyCharacter], Source={x:Static core:LocalizationService.Instance}}"
                                             HorizontalAlignment="Right"
                                             Margin="0,6,0,0"
@@ -222,51 +235,26 @@
                                 </Grid>
                             </GroupBox>
 
-                            <GroupBox Grid.Row="1" Header="{Binding [GrpSkills], Source={x:Static core:LocalizationService.Instance}}" Margin="0,0,0,6">
-                                <DataGrid ItemsSource="{Binding PlayerSkills}" IsReadOnly="False">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Skill" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
-                                        <DataGridTextColumn Header="Base" Binding="{Binding BaseValue, UpdateSourceTrigger=PropertyChanged}" Width="65" />
-                                        <DataGridTextColumn Header="Bonus" Binding="{Binding OffsetValue, UpdateSourceTrigger=PropertyChanged}" Width="65" />
-                                        <DataGridTextColumn Header="Total" Binding="{Binding TotalValue}" Width="65" IsReadOnly="True" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </GroupBox>
-
-                            <GroupBox Grid.Row="2" Header="{Binding [GrpConsoleExtras], Source={x:Static core:LocalizationService.Instance}}" Margin="0">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="95" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="95" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Carry Weight:" VerticalAlignment="Center" Margin="0,2" />
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ExtraCarryWeight, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,8,2" />
-
-                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Dragon Souls:" VerticalAlignment="Center" Margin="0,2" />
-                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ExtraDragonSouls, UpdateSourceTrigger=PropertyChanged}" Margin="2,2" />
-
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Gold / Caps:" VerticalAlignment="Center" Margin="0,2" />
-                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ExtraGold, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,8,2" />
-
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Perk Points:" VerticalAlignment="Center" Margin="0,2" />
-                                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ExtraPerks, UpdateSourceTrigger=PropertyChanged}" Margin="2,2" />
-
-                                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
-                                            Content="{Binding [BtnExportBat], Source={x:Static core:LocalizationService.Instance}}"
-                                            Style="{DynamicResource BotaoPrimario}"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,6,0,0"
-                                            Click="BtnExportarBat_Click" />
-                                </Grid>
-                            </GroupBox>
+                            <TabControl Grid.Row="1" Margin="0">
+                                <TabItem Header="{Binding LabelSkillsTab}">
+                                    <DataGrid ItemsSource="{Binding PlayerSkills}" IsReadOnly="False" Margin="4">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Skill / Attribute" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Level" Binding="{Binding Level, UpdateSourceTrigger=PropertyChanged}" Width="80" />
+                                            <DataGridTextColumn Header="Legendary" Binding="{Binding LegendaryCount, UpdateSourceTrigger=PropertyChanged}" Width="80" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </TabItem>
+                                <TabItem Header="All Actor Values (ACHR)">
+                                    <DataGrid ItemsSource="{Binding PlayerActorValues}" IsReadOnly="False" Margin="4">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="ID" Binding="{Binding IdHex}" Width="75" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Actor Value" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="95" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </TabItem>
+                            </TabControl>
                         </Grid>
 
                         <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Stretch" Background="Transparent" />
