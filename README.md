@@ -2,9 +2,20 @@
 
 A fast, native Windows **WPF (.NET Framework 4.8 / C# 7.3)** savegame editor, analyzer, and cleaner for **Skyrim (LE, SE, VR, Switch)** and **Fallout 4 (Standard & VR)**.
 
+[![Status](https://img.shields.io/badge/Status-BETA-orange?style=for-the-badge)](#beta-warning)
 [![Download Latest Release](https://img.shields.io/badge/Download-Latest%20Release-2B579A?style=for-the-badge)](https://github.com/xaotix/DLM.BethesdaSaveEditor/releases/latest)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20(.NET%204.8)-blue?style=for-the-badge)](#requirements)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green?style=for-the-badge)](#credits)
+
+---
+
+<a id="beta-warning"></a>
+> [!WARNING]
+> **BETA SOFTWARE — USE AT YOUR OWN RISK**
+>
+> **DLM.BethesdaSaveEditor is currently in BETA and may contain bugs or unexpected issues**, especially when directly modifying binary savegame structures across different game versions and heavily modded load orders.
+> - Although the editor creates automatic `.bak` backups before saving, **always keep your own manual backup copy of your save files** before making edits.
+> - Test edited saves in-game right after saving and report any issues you encounter!
 
 ---
 
