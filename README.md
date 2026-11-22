@@ -142,4 +142,4 @@ The standalone executable is generated at `DLM.BethesdaSaveEditor\bin\Release\DL
 ## Credits
 
 - **WPF Edition Developer:** **xaotix**
-- **Original Author & Format Research:** **Mark Fairchild** — [FallrimTools / ReSaver](https://github.com/MarkDF/FallrimTools) (Licensed under the Apache License, Version 2.0).
+- **Original Project & Format Research:** **Mark Fairchild / AI-Underdog** — [FallrimTools-Re-Saver](https://github.com/AI-Underdog/FallrimTools-Re-Saver) (Licensed under the Apache License, Version 2.0).

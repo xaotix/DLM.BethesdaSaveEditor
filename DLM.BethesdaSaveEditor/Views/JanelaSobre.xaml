@@ -50,8 +50,8 @@
                                Margin="0,3,0,4" />
                     <TextBlock>
                         <Run Text="Original Project (FallrimTools / ReSaver): " />
-                        <Hyperlink NavigateUri="https://github.com/MarkDF/FallrimTools" RequestNavigate="Hyperlink_RequestNavigate">
-                            github.com/MarkDF/FallrimTools
+                        <Hyperlink NavigateUri="https://github.com/AI-Underdog/FallrimTools-Re-Saver" RequestNavigate="Hyperlink_RequestNavigate">
+                            github.com/AI-Underdog/FallrimTools-Re-Saver
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
